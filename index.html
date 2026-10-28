@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sweet Studio — торти, капкейки та бенто на замовлення (демо)</title>
+  <meta name="description" content="Демо-сайт вигаданої кондитерської Sweet Studio: дитячі та весільні торти, бенто, капкейки й набори на замовлення.">
+  <meta name="theme-color" content="#FBF6EF">
+  <!-- Демо-версия: не индексировать в поисковиках -->
+  <meta name="robots" content="noindex">
+
+  <!-- Шрифты: Cormorant Garamond — изящные заголовки с курсивом, Nunito — мягкий читаемый текст. Оба с кириллицей -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&display=swap" rel="stylesheet">
+
+  <style>
+    /* =========================================================
+       1. ДИЗАЙН-ТОКЕНЫ
+       ========================================================= */
+    :root {
+      --cream: #FBF6EF;        /* основной фон */
+      --cream-deep: #F5EBDF;   /* фон чередующихся секций */
+      --paper: #FFFDFA;        /* фон карточек */
+      --berry: #9E3D5B;        /* акцент: ягодный */
+      --berry-dark: #7E2C46;   /* акцент при наведении */
+      --rose: #E8C4C9;         /* пыльно-розовый */
+      --rose-soft: #F6E4E5;    /* светлый розовый для плашек */
+      --ink: #3A2A2F;          /* основной текст */
+      --muted: #7A6468;        /* второстепенный текст */
+      --line: #EBDCD5;         /* границы */
+      --error: #B3261E;
+
+      --font-head: "Cormorant Garamond", Georgia, serif;
+      --font-body: "Nunito", system-ui, -apple-system, "Segoe UI", sans-serif;
+
+      --radius-lg: 24px;
+      --radius-md: 16px;
+      --radius-pill: 999px;
+      --shadow-soft: 0 10px 30px -12px rgba(126, 44, 70, .18), 0 2px 6px rgba(58, 42, 47, .05);
+      --shadow-lift: 0 18px 40px -14px rgba(126, 44, 70, .28), 0 4px 10px rgba(58, 42, 47, .06);
+
+      --header-h: 64px;
+      --ease: cubic-bezier(.22, .61, .36, 1);
+    }
+
+    /* =========================================================
+       2. БАЗОВЫЕ СТИЛИ
+       ========================================================= */
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+    body {
+      margin: 0;
+      background: var(--cream);
+      color: var(--ink);
+      font-family: var(--font-body);
+      font-size: 16px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+    [hidden] { display: none !important; }
+    img { display: block; max-width: 100%; height: auto; }
+    a { color: var(--berry); }
+    h1, h2, h3 { font-family: var(--font-head); font-weight: 600; line-height: 1.1; margin: 0; color: var(--ink); }
+    p { margin: 0; }
+    button, input, select, textarea { font: inherit; color: inherit; }
+    :focus-visible { outline: 3px solid var(--berry); outline-offset: 3px; border-radius: 8px; }
+
+    .container { width: 100%; max-width: 1160px; margin: 0 auto; padding: 0 20px; }
+    .section { padding: 72px 0; scroll-margin-top: var(--header-h); }
+    .section--deep { background: var(--cream-deep); }
+    .section__head { max-width: 620px; margin: 0 auto 36px; text-align: center; }
+    .section__eyebrow {
+      display: inline-block; margin-bottom: 10px;
+      font-size: 13px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--berry);
+    }
+    .section__title { font-size: clamp(36px, 7.5vw, 52px); }
+    .section__lead { margin-top: 12px; color: var(--muted); font-size: 17px; }
+
+    .visually-hidden {
+      position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px;
+      overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+    }
+
+    /* Кнопки */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      min-height: 48px; padding: 12px 26px;
+      border: 2px solid transparent; border-radius: var(--radius-pill);
+      font-weight: 700; font-size: 16px; text-decoration: none; cursor: pointer; white-space: nowrap;
+      transition: background-color .2s var(--ease), color .2s var(--ease), transform .2s var(--ease), box-shadow .2s var(--ease);
+    }
+    .btn--primary { background: var(--berry); color: #fff; box-shadow: 0 8px 20px -8px rgba(158, 61, 91, .6); }
+    .btn--primary:hover { background: var(--berry-dark); transform: translateY(-1px); }
+    .btn--ghost { background: transparent; color: var(--berry); border-color: var(--rose); }
+    .btn--ghost:hover { background: var(--rose-soft); border-color: var(--berry); }
+    .btn--sm { min-height: 44px; padding: 8px 20px; font-size: 15px; }
+    .btn svg { width: 18px; height: 18px; flex: none; }
+
+    /* =========================================================
+       3. ШАПКА (sticky) И HERO
+       ========================================================= */
+    .topbar {
+      position: sticky; top: 0; z-index: 50;
+      background: rgba(251, 246, 239, .88);
+      backdrop-filter: saturate(1.4) blur(12px);
+      -webkit-backdrop-filter: saturate(1.4) blur(12px);
+      border-bottom: 1px solid transparent;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .topbar.is-scrolled { border-bottom-color: var(--line); box-shadow: 0 6px 20px -16px rgba(58, 42, 47, .4); }
+    .topbar__inner { height: var(--header-h); display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+    .logo {
+      display: inline-flex; align-items: center; gap: 10px;
+      font-family: var(--font-head); font-size: 25px; font-weight: 700; color: var(--ink); text-decoration: none;
+    }
+    .logo__mark { width: 34px; height: 34px; flex: none; }
+    .nav { display: none; gap: 28px; }
+    .nav a { color: var(--ink); text-decoration: none; font-weight: 600; font-size: 15px; padding: 8px 0; transition: color .2s; }
+    .nav a:hover { color: var(--berry); }
+
+    .hero { position: relative; padding: 40px 0 64px; overflow: hidden; }
+    .hero::before {   /* мягкое розовое пятно на фоне */
+      content: ""; position: absolute; z-index: -1;
+      width: 520px; height: 520px; right: -180px; top: -120px;
+      background: radial-gradient(circle, var(--rose-soft) 0%, rgba(246, 228, 229, 0) 70%);
+    }
+    .hero__grid { display: grid; gap: 36px; align-items: center; }
+    .hero__badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 6px 14px; margin-bottom: 18px;
+      background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius-pill);
+      font-size: 14px; font-weight: 600; color: var(--muted);
+    }
+    .hero__badge svg { width: 16px; height: 16px; color: var(--berry); }
+    .hero__title { font-size: clamp(50px, 14vw, 88px); font-weight: 700; letter-spacing: -.01em; line-height: 1; }
+    .hero__title em { font-style: italic; font-weight: 600; color: var(--berry); }
+    .hero__slogan { margin-top: 16px; font-size: clamp(18px, 4.6vw, 22px); color: var(--muted); max-width: 30ch; }
+    .hero__actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+    .hero__media { position: relative; }
+    .hero__photo {
+      width: 100%; aspect-ratio: 1 / 1; object-fit: cover;
+      border-radius: 200px 200px var(--radius-lg) var(--radius-lg);   /* арка — «витринная» форма */
+      box-shadow: var(--shadow-lift);
+      background: var(--rose-soft);
+    }
+    .hero__note {
+      position: absolute; left: -6px; bottom: 22px;
+      display: flex; align-items: center; gap: 10px;
+      padding: 12px 16px; max-width: 230px;
+      background: var(--paper); border-radius: var(--radius-md); box-shadow: var(--shadow-soft);
+      font-size: 14px; font-weight: 600; line-height: 1.35;
+    }
+    .hero__note-icon {
+      flex: none; width: 36px; height: 36px; border-radius: 50%;
+      display: grid; place-items: center; background: var(--rose-soft); color: var(--berry);
+    }
+    .hero__note-icon svg { width: 18px; height: 18px; }
+
+    /* =========================================================
+       4. КАТАЛОГ: ТАБЫ И КАРТОЧКИ
+       ========================================================= */
+    .tabs {
+      display: flex; gap: 8px; margin: 0 -20px 32px; padding: 4px 20px;
+      overflow-x: auto; scroll-snap-type: x proximity; scrollbar-width: none;
+    }
+    .tabs::-webkit-scrollbar { display: none; }
+    .tab {
+      flex: none; scroll-snap-align: start;
+      min-height: 44px; padding: 10px 22px;
+      background: var(--paper); border: 1.5px solid var(--line); border-radius: var(--radius-pill);
+      font-weight: 600; font-size: 15px; color: var(--ink); cursor: pointer;
+      transition: background-color .2s var(--ease), border-color .2s var(--ease), color .2s var(--ease);
+    }
+    .tab:hover { border-color: var(--rose); background: var(--rose-soft); }
+    .tab[aria-selected="true"] { background: var(--berry); border-color: var(--berry); color: #fff; }
+
+    .cards { display: grid; gap: 22px; grid-template-columns: 1fr; }
+    .card {
+      display: flex; flex-direction: column;
+      background: var(--paper); border-radius: var(--radius-lg); overflow: hidden;
+      box-shadow: var(--shadow-soft);
+      transition: transform .25s var(--ease), box-shadow .25s var(--ease);
+      animation: card-in .4s var(--ease) both;
+    }
+    .card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lift); }
+    .card__photo { width: 100%; aspect-ratio: 5 / 4; object-fit: cover; background: var(--rose-soft); }
+    .card__body { display: flex; flex-direction: column; gap: 6px; padding: 18px 20px 20px; flex: 1; }
+    .card__title { font-size: 25px; }
+    .card__desc { color: var(--muted); font-size: 15px; }
+    .card__footer { display: flex; margin-top: auto; padding-top: 14px; }
+    @keyframes card-in { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+
+    /* =========================================================
+       5. НАЧИНКИ
+       ========================================================= */
+    .fillings { display: grid; gap: 16px; grid-template-columns: 1fr; }
+    .filling {
+      display: flex; gap: 16px; align-items: flex-start;
+      padding: 20px; background: var(--paper); border-radius: var(--radius-lg); box-shadow: var(--shadow-soft);
+    }
+    .filling__swatch {   /* «срез» торта: слои коржа и крема рисуются градиентом */
+      flex: none; width: 64px; height: 64px; border-radius: 50%;
+      box-shadow: inset 0 0 0 4px var(--paper), 0 0 0 1.5px var(--line);
+    }
+    .filling__title { font-size: 23px; margin-bottom: 4px; }
+    .filling__text { color: var(--muted); font-size: 15px; }
+
+    /* =========================================================
+       6. КАК ЗАКАЗАТЬ
+       ========================================================= */
+    .steps { display: grid; gap: 16px; grid-template-columns: 1fr; counter-reset: step; list-style: none; padding: 0; margin: 0; }
+    .step {
+      position: relative; padding: 26px 22px 24px;
+      background: var(--paper); border-radius: var(--radius-lg); box-shadow: var(--shadow-soft);
+    }
+    .step__icon {
+      width: 52px; height: 52px; border-radius: 16px; margin-bottom: 16px;
+      display: grid; place-items: center; background: var(--rose-soft); color: var(--berry);
+    }
+    .step__icon svg { width: 26px; height: 26px; }
+    .step::after {   /* крупный номер шага */
+      counter-increment: step; content: "0" counter(step);
+      position: absolute; top: 18px; right: 22px;
+      font-family: var(--font-head); font-size: 46px; font-weight: 600; font-style: italic; color: var(--rose);
+    }
+    .step__title { font-size: 24px; margin-bottom: 6px; }
+    .step__text { color: var(--muted); font-size: 15px; }
+    .urgent {
+      display: flex; gap: 14px; align-items: center;
+      margin-top: 20px; padding: 18px 20px;
+      background: var(--berry); color: #fff; border-radius: var(--radius-lg);
+    }
+    .urgent svg { flex: none; width: 28px; height: 28px; }
+    .urgent strong { display: block; font-size: 17px; }
+    .urgent span { opacity: .9; font-size: 15px; }
+
+    /* =========================================================
+       7. ФОРМА ЗАКАЗА
+       ========================================================= */
+    .order-box {
+      max-width: 760px; margin: 0 auto; padding: 28px 20px;
+      background: var(--paper); border-radius: var(--radius-lg); box-shadow: var(--shadow-soft);
+    }
+    .form { display: grid; gap: 18px; grid-template-columns: 1fr; }
+    .field { display: flex; flex-direction: column; gap: 6px; }
+    .field--full { grid-column: 1 / -1; }
+    .field label, .field .label { font-weight: 600; font-size: 15px; }
+    .field .req { color: var(--berry); }
+    .input {
+      width: 100%; min-height: 50px; padding: 12px 16px;
+      background: var(--cream); border: 1.5px solid var(--line); border-radius: 14px;
+      font-size: 16px;   /* 16px — чтобы iOS не зумил поле при фокусе */
+      transition: border-color .2s, box-shadow .2s, background-color .2s;
+    }
+    .input:hover { border-color: var(--rose); }
+    .input:focus { outline: none; border-color: var(--berry); background: #fff; box-shadow: 0 0 0 4px rgba(158, 61, 91, .14); }
+    textarea.input { min-height: 110px; resize: vertical; }
+    select.input {
+      appearance: none; -webkit-appearance: none; padding-right: 44px; cursor: pointer;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' fill='none' stroke='%239E3D5B' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' viewBox='0 0 24 24'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 14px center;
+    }
+    .field.has-error .input { border-color: var(--error); }
+    .field__error { display: none; color: var(--error); font-size: 14px; }
+    .field.has-error .field__error { display: block; }
+    .field__hint { color: var(--muted); font-size: 14px; }
+    .input.is-highlighted { animation: highlight 1.4s var(--ease); }
+    @keyframes highlight {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(158, 61, 91, 0); }
+      30% { box-shadow: 0 0 0 6px rgba(158, 61, 91, .25); border-color: var(--berry); }
+    }
+
+    /* Загрузка фото-референса */
+    .upload {
+      display: flex; align-items: center; gap: 14px;
+      padding: 16px; min-height: 76px;
+      border: 1.5px dashed var(--rose); border-radius: 14px; background: var(--cream);
+      cursor: pointer; transition: border-color .2s, background-color .2s;
+    }
+    .upload:hover { border-color: var(--berry); background: var(--rose-soft); }
+    .upload input:focus-visible + .upload__icon { outline: 3px solid var(--berry); outline-offset: 3px; }
+    .upload__icon {
+      flex: none; width: 46px; height: 46px; border-radius: 12px; overflow: hidden;
+      display: grid; place-items: center; background: var(--paper); color: var(--berry);
+    }
+    .upload__icon svg { width: 22px; height: 22px; }
+    .upload__icon img { width: 100%; height: 100%; object-fit: cover; }
+    .upload__text { font-size: 15px; line-height: 1.4; }
+    .upload__text b { color: var(--berry); }
+    .upload__text span { display: block; color: var(--muted); font-size: 14px; word-break: break-all; }
+
+    .form__submit { width: 100%; min-height: 54px; font-size: 17px; }
+    .form__note { text-align: center; color: var(--muted); font-size: 14px; }
+
+    /* Сообщение об успешной отправке */
+    .success { display: none; text-align: center; padding: 24px 8px; }
+    .success.is-visible { display: block; animation: card-in .45s var(--ease) both; }
+    .success__icon {
+      width: 72px; height: 72px; margin: 0 auto 18px; border-radius: 50%;
+      display: grid; place-items: center; background: var(--rose-soft); color: var(--berry);
+    }
+    .success__icon svg { width: 34px; height: 34px; }
+    .success__title { font-size: 32px; margin-bottom: 10px; }
+    .success__text { color: var(--muted); margin-bottom: 24px; }
+
+    /* =========================================================
+       8. ФУТЕР
+       ========================================================= */
+    .footer { padding: 48px 0 36px; background: var(--ink); color: #F3E7E2; text-align: center; }
+    .footer .logo { color: #fff; justify-content: center; }
+    .footer__city { margin-top: 6px; color: #CDB8B5; }
+    .socials { display: flex; justify-content: center; gap: 12px; margin: 24px 0; flex-wrap: wrap; }
+    .social {
+      display: inline-flex; align-items: center; gap: 10px;
+      min-height: 48px; padding: 10px 20px;
+      border: 1.5px solid rgba(255, 255, 255, .22); border-radius: var(--radius-pill);
+      color: #fff; text-decoration: none; font-weight: 600;
+      transition: background-color .2s, border-color .2s;
+    }
+    .social:hover { background: rgba(255, 255, 255, .08); border-color: var(--rose); }
+    .social svg { width: 20px; height: 20px; }
+    .footer__copy { font-size: 14px; color: #A9938F; }
+    .footer__copy a { color: #CDB8B5; }
+
+    /* Плашка «Демо-версія» — фиксированная, не перехватывает клики */
+    .demo-badge {
+      position: fixed; left: 12px; bottom: 12px; z-index: 60;
+      padding: 6px 12px; border-radius: var(--radius-pill);
+      background: rgba(58, 42, 47, .86); color: #fff;
+      font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+      pointer-events: none;
+    }
+
+    /* =========================================================
+       9. АДАПТИВ (mobile-first: дальше — планшет и десктоп)
+       ========================================================= */
+    @media (min-width: 560px) {
+      .cards { grid-template-columns: repeat(2, 1fr); }
+      .fillings { grid-template-columns: repeat(2, 1fr); }
+      .form { grid-template-columns: repeat(2, 1fr); }
+      .order-box { padding: 40px; }
+    }
+    @media (min-width: 860px) {
+      :root { --header-h: 72px; }
+      .section { padding: 96px 0; }
+      .nav { display: flex; }
+      .hero { padding: 64px 0 96px; }
+      .hero__grid { grid-template-columns: 1.1fr .9fr; gap: 56px; }
+      .hero__photo { aspect-ratio: 4 / 5; }
+      .hero__note { left: -32px; }
+      .tabs { justify-content: center; margin: 0 0 40px; padding: 4px 0; }
+      .fillings { grid-template-columns: repeat(3, 1fr); }
+      .steps { grid-template-columns: repeat(3, 1fr); gap: 22px; }
+    }
+    @media (min-width: 1080px) {
+      .cards { grid-template-columns: repeat(4, 1fr); }
+      .card__title { font-size: 23px; }
+    }
+
+    /* Уважение к настройке «уменьшить движение» */
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ================= SVG-ИКОНКИ (спрайт) ================= -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="i-instagram" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".6" fill="currentColor"/></symbol>
+    <symbol id="i-telegram" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.5 3.5-19 7.3c-.8.3-.8 1.4 0 1.7l4.7 1.6 1.8 5.7c.2.7 1.1.9 1.6.4l2.7-2.5 4.8 3.5c.6.4 1.4.1 1.6-.6L22.9 4.9c.2-.9-.6-1.7-1.4-1.4Z"/><path d="m7.2 14.1 10-6.6-7.5 8.3"/></symbol>
+    <symbol id="i-cake" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-8a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8"/><path d="M4 16s.5-1 2-1 2.5 2 4 2 2.5-2 4-2 2.5 2 4 2 2-1 2-1"/><path d="M2 21h20"/><path d="M7 8v3M12 8v3M17 8v3"/><path d="M7 4h.01M12 4h.01M17 4h.01"/></symbol>
+    <symbol id="i-message" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M8 9h8M8 13h5"/></symbol>
+    <symbol id="i-gift" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13"/><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5C10 3 12 8 12 8s2-5 4.5-5a2.5 2.5 0 0 1 0 5"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+    <symbol id="i-heart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.5-1.5 3-3.2 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.8 0-3 .5-4.5 2-1.5-1.5-2.7-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4 3 5.5l7 7Z"/></symbol>
+    <symbol id="i-image" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.1-3.1a2 2 0 0 0-2.8 0L6 21"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+    <symbol id="i-logo" viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="20" fill="#F6E4E5"/><path d="M11 28v-6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v6" stroke="#9E3D5B" stroke-width="2" stroke-linecap="round"/><path d="M9 28h22" stroke="#9E3D5B" stroke-width="2" stroke-linecap="round"/><path d="M11 24c1.5 0 2-1.4 3-1.4s1.5 1.4 3 1.4 2-1.4 3-1.4 1.5 1.4 3 1.4 2-1.4 3-1.4 1.5 1.4 3 1.4" stroke="#9E3D5B" stroke-width="1.6" stroke-linecap="round"/><path d="M20 20v-4" stroke="#9E3D5B" stroke-width="2" stroke-linecap="round"/><path d="M20 10.5c1.2 1.2 1.2 2.6 0 3.4-1.2-.8-1.2-2.2 0-3.4Z" fill="#9E3D5B"/></symbol>
+  </svg>
+
+  <!-- ================= 1. ШАПКА ================= -->
+  <header class="topbar" id="topbar">
+    <div class="container topbar__inner">
+      <a href="#top" class="logo" aria-label="Sweet Studio — на початок сторінки">
+        <svg class="logo__mark" aria-hidden="true"><use href="#i-logo"/></svg>
+        Sweet Studio
+      </a>
+      <nav class="nav" aria-label="Основна навігація">
+        <a href="#catalog">Каталог</a>
+        <a href="#fillings">Начинки</a>
+        <a href="#how">Як замовити</a>
+      </nav>
+      <a href="#order" class="btn btn--primary btn--sm">Замовити</a>
+    </div>
+  </header>
+
+  <main id="top">
+
+    <!-- ================= HERO ================= -->
+    <section class="hero">
+      <div class="container hero__grid">
+        <div>
+          <span class="hero__badge">
+            <svg aria-hidden="true"><use href="#i-heart"/></svg>
+            Домашня кондитерська · демо-сайт
+          </span>
+          <h1 class="hero__title">Sweet <em>Studio</em></h1>
+          <p class="hero__slogan">Торти, капкейки та бенто на замовлення</p>
+          <div class="hero__actions">
+            <a href="#order" class="btn btn--primary">
+              Замовити
+              <svg aria-hidden="true"><use href="#i-arrow"/></svg>
+            </a>
+            <a href="#catalog" class="btn btn--ghost">Дивитися каталог</a>
+          </div>
+        </div>
+        <div class="hero__media">
+          <img class="hero__photo"
+               src="https://images.unsplash.com/photo-1535141192574-5d4897c12636?w=800&h=1000&fit=crop&auto=format&q=75" fetchpriority="high"
+               width="800" height="1000" alt="Триярусний білий торт зі свіжими ягодами (демо-фото з Unsplash)">
+          <div class="hero__note">
+            <span class="hero__note-icon"><svg aria-hidden="true"><use href="#i-clock"/></svg></span>
+            Приймаємо навіть термінові замовлення
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= 2–3. КАТАЛОГ ================= -->
+    <section class="section section--deep" id="catalog" aria-labelledby="catalog-title">
+      <div class="container">
+        <div class="section__head">
+          <span class="section__eyebrow">Каталог</span>
+          <h2 class="section__title" id="catalog-title">Оберіть свій десерт</h2>
+          <p class="section__lead">Кожен торт печемо під замовлення — дизайн і напис узгоджуємо з вами.<br><small>Фото в каталозі демонстраційні, з Unsplash.</small></p>
+        </div>
+
+        <!-- Табы-категории: кнопки создаются из данных в JS -->
+        <div class="tabs" role="tablist" aria-label="Категорії десертів" id="tabs"></div>
+
+        <!-- Сетка карточек -->
+        <div class="cards" id="cards" role="tabpanel" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <!-- ================= 4. НАЧИНКИ ================= -->
+    <section class="section" id="fillings" aria-labelledby="fillings-title">
+      <div class="container">
+        <div class="section__head">
+          <span class="section__eyebrow">Начинки</span>
+          <h2 class="section__title" id="fillings-title">Що всередині</h2>
+          <p class="section__lead">Натуральні вершки, справжній шоколад і сезонні ягоди. Будь-яку начинку можна поєднати з будь-яким дизайном.</p>
+        </div>
+        <div class="fillings" id="fillings-list"></div>
+      </div>
+    </section>
+
+    <!-- ================= 5. ЯК ЗАМОВИТИ ================= -->
+    <section class="section section--deep" id="how" aria-labelledby="how-title">
+      <div class="container">
+        <div class="section__head">
+          <span class="section__eyebrow">Як замовити</span>
+          <h2 class="section__title" id="how-title">Три простих кроки</h2>
+        </div>
+        <ol class="steps">
+          <li class="step">
+            <div class="step__icon"><svg aria-hidden="true"><use href="#i-cake"/></svg></div>
+            <h3 class="step__title">Обираєте торт</h3>
+            <p class="step__text">Знайдіть дизайн у каталозі або надішліть фото-референс того, що сподобалось.</p>
+          </li>
+          <li class="step">
+            <div class="step__icon"><svg aria-hidden="true"><use href="#i-message"/></svg></div>
+            <h3 class="step__title">Залишаєте заявку</h3>
+            <p class="step__text">Заповніть форму — ми звʼяжемося, уточнимо деталі, начинку та вартість.</p>
+          </li>
+          <li class="step">
+            <div class="step__icon"><svg aria-hidden="true"><use href="#i-gift"/></svg></div>
+            <h3 class="step__title">Забираєте у призначений день</h3>
+            <p class="step__text">Торт буде готовий точно до вказаної дати — свіжий і красиво запакований.</p>
+          </li>
+        </ol>
+        <div class="urgent">
+          <svg aria-hidden="true"><use href="#i-clock"/></svg>
+          <p><strong>Потрібно терміново?</strong><span>Приймаємо навіть термінові замовлення — напишіть, і ми спробуємо встигнути.</span></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= 6. ФОРМА ЗАМОВЛЕННЯ ================= -->
+    <section class="section" id="order" aria-labelledby="order-title">
+      <div class="container">
+        <div class="section__head">
+          <span class="section__eyebrow">Замовлення</span>
+          <h2 class="section__title" id="order-title">Залиште заявку</h2>
+          <p class="section__lead">Відповімо протягом дня, щоб узгодити деталі.</p>
+        </div>
+
+        <div class="order-box">
+          <form class="form" id="order-form" novalidate>
+            <!-- Торт идёт первым: его подставляет кнопка «Хочу такий», и поле сразу видно после скролла -->
+            <div class="field field--full">
+              <label for="f-cake">Торт</label>
+              <select class="input" id="f-cake" name="cake">
+                <option value="">Ще не обрали / свій дизайн</option>
+              </select>
+              <span class="field__hint">Оберіть зі списку або натисніть «Хочу такий» у каталозі</span>
+            </div>
+
+            <div class="field">
+              <label for="f-name">Імʼя <span class="req" aria-hidden="true">*</span></label>
+              <input class="input" id="f-name" name="name" type="text" autocomplete="name" required aria-describedby="e-name">
+              <span class="field__error" id="e-name">Вкажіть, будь ласка, ваше імʼя</span>
+            </div>
+
+            <div class="field">
+              <label for="f-phone">Телефон <span class="req" aria-hidden="true">*</span></label>
+              <input class="input" id="f-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+380 __ ___ __ __" required aria-describedby="e-phone">
+              <span class="field__error" id="e-phone">Вкажіть коректний номер телефону</span>
+            </div>
+
+            <div class="field">
+              <label for="f-date">Дата <span class="req" aria-hidden="true">*</span></label>
+              <input class="input" id="f-date" name="date" type="date" required aria-describedby="e-date">
+              <span class="field__error" id="e-date">Оберіть дату, не раніше сьогоднішньої</span>
+            </div>
+
+            <div class="field">
+              <label for="f-weight">Вага, кг</label>
+              <input class="input" id="f-weight" name="weight" type="number" inputmode="decimal" min="0.5" max="20" step="0.5" placeholder="Напр., 2" aria-describedby="e-weight">
+              <span class="field__error" id="e-weight">Вага — від 0,5 до 20 кг</span>
+            </div>
+
+            <div class="field">
+              <label for="f-filling">Начинка</label>
+              <select class="input" id="f-filling" name="filling">
+                <option value="">Порадьте мені</option>
+              </select>
+            </div>
+
+            <div class="field field--full">
+              <label for="f-wishes">Побажання</label>
+              <textarea class="input" id="f-wishes" name="wishes" placeholder="Напис, кольори, тематика свята, алергії…"></textarea>
+            </div>
+
+            <div class="field field--full">
+              <span class="label" id="l-photo">Фото-референс</span>
+              <label class="upload" for="f-photo">
+                <input class="visually-hidden" id="f-photo" name="photo" type="file" accept="image/*" aria-labelledby="l-photo">
+                <span class="upload__icon" id="upload-icon"><svg aria-hidden="true"><use href="#i-image"/></svg></span>
+                <span class="upload__text" id="upload-text"><b>Завантажити фото</b><span>JPG або PNG — приклад торта, який вам подобається</span></span>
+              </label>
+            </div>
+
+            <div class="field field--full">
+              <button type="submit" class="btn btn--primary form__submit">Надіслати заявку</button>
+              <p class="form__note">Натискаючи кнопку, ви погоджуєтесь на обробку контактних даних.</p>
+            </div>
+          </form>
+
+          <!-- Сообщение после «отправки» -->
+          <div class="success" id="success" role="status" tabindex="-1">
+            <div class="success__icon"><svg aria-hidden="true"><use href="#i-check"/></svg></div>
+            <h3 class="success__title">Заявку прийнято</h3>
+            <p class="success__text">Дякуємо! Ми звʼяжемося з вами найближчим часом</p>
+            <button type="button" class="btn btn--ghost" id="new-order">Нова заявка</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ================= 7. ФУТЕР ================= -->
+  <footer class="footer">
+    <div class="container">
+      <a href="#top" class="logo">
+        <svg class="logo__mark" aria-hidden="true"><use href="#i-logo"/></svg>
+        Sweet Studio
+      </a>
+      <div class="socials">
+        <!-- Демо: ссылки-заглушки, подставить реальные аккаунты кондитерской -->
+        <a class="social" href="#" data-demo-link>
+          <svg aria-hidden="true"><use href="#i-instagram"/></svg> Instagram
+        </a>
+        <a class="social" href="#" data-demo-link>
+          <svg aria-hidden="true"><use href="#i-telegram"/></svg> Telegram
+        </a>
+      </div>
+      <p class="footer__copy">© <span id="year"></span> Sweet Studio — вигадана кондитерська, демо-сайт.<br>Фото: <a href="https://unsplash.com/" target="_blank" rel="noopener">Unsplash</a> (безкоштовна ліцензія).</p>
+    </div>
+  </footer>
+
+  <!-- Плашка демо-версии -->
+  <div class="demo-badge">Демо-версія</div>
+
+  <script>
+    /* =========================================================
+       ДАННЫЕ: категории, торты и начинки.
+       Чтобы добавить торт — допишите объект в нужную категорию.
+       ========================================================= */
+    const PLACEHOLDER = (text, bg, fg) =>
+      `https://placehold.co/600x480/${bg}/${fg}?text=${encodeURIComponent(text)}&font=playfair-display`;
+
+    /* Демо-фото: бесплатные снимки с Unsplash (подгружаются с их CDN) */
+    const UNSPLASH = (id) => `https://images.unsplash.com/photo-${id}?w=800&h=640&fit=crop&auto=format&q=75`;
+
+    const CATEGORIES = [
+      { id: 'kids', name: 'Дитячі', bg: 'F7DCE0', fg: '9E3D5B', items: [
+        { name: 'Веселка', desc: 'Яскравий торт з веселкою та кольоровим декором', photo: UNSPLASH('1741969494234-7d4bcd1002ab') },
+        { name: 'Морські пригоди', desc: 'Бірюзовий крем, рибки та водорості з мастики', photo: UNSPLASH('1759922550477-19632d9ce30b') },
+        { name: 'Різнокольорові коржі', desc: 'Шість яскравих коржів — сюрприз на розрізі', photo: UNSPLASH('1622576890453-8e50b6f7d5b0') },
+        { name: 'Єдиноріг', desc: 'Золотий ріг, вушка та кремова грива', photo: UNSPLASH('1565098724521-089da1fa652a') },
+      ]},
+      { id: 'wedding', name: 'Весільні', bg: 'F3E9E1', fg: '8A5A4A', items: [
+        { name: 'Вишнева класика', desc: 'Триярусний білий торт зі свіжою вишнею', photo: UNSPLASH('1764380746142-b35392fe7428') },
+        { name: 'Трояндовий сад', desc: 'Ніжні троянди та зелень на білосніжному крему', photo: UNSPLASH('1761671613315-53157f91d0f8') },
+        { name: 'Інжир та ягоди', desc: 'Відкриті коржі, свіжий інжир і зелень', photo: UNSPLASH('1565661834013-d196ca46e14e') },
+        { name: 'Біла елегантність', desc: 'Кремові волани та живі кали', photo: UNSPLASH('1771305145464-01a595836294') },
+      ]},
+      { id: 'bento', name: 'Бенто', bg: 'EFD6E0', fg: '7E2C46', items: [
+        { name: 'Бенто «Love»', desc: 'Серце з кремовим бортиком і написом', photo: UNSPLASH('1664589076780-295c86106e93') },
+        { name: 'Бенто з трояндою', desc: 'Рожевий крем, кремова троянда та перлини', photo: UNSPLASH('1778447849704-913b5e8a5695') },
+        { name: 'Бенто «Forever»', desc: 'Кольорові сердечка та ваш напис', photo: UNSPLASH('1762950350879-650b940db566') },
+        { name: 'Червоне серце', desc: 'Мусовий торт у формі серця з дзеркальною глазуррю', photo: UNSPLASH('1677256267417-2d84da95887f') },
+      ]},
+      { id: 'cupcakes', name: 'Капкейки', bg: 'F6E2D6', fg: '9A4E3A', items: [
+        { name: 'Червоний оксамит', desc: 'Червоний бісквіт, крем-чиз і малина', photo: UNSPLASH('1614707267537-b85aaf00c4b7') },
+        { name: 'Пастельні капкейки', desc: 'Ніжні кольори крему та кольорова посипка', photo: UNSPLASH('1778904912387-f9d856a8526a') },
+        { name: 'Рожеві хмаринки', desc: 'Повітряна рожева шапочка з вершкового крему', photo: UNSPLASH('1607478900766-efe13248b125') },
+      ]},
+      { id: 'sets', name: 'Набори', bg: 'EADFE8', fg: '6F3D5E', items: [
+        { name: 'Бокс капкейків', desc: 'Асорті капкейків у святковій коробці', photo: UNSPLASH('1771016833994-400a164912ac') },
+        { name: 'Набір макарон', desc: 'Макарон різних смаків у подарунковій коробці', photo: UNSPLASH('1775327278508-beb3308fcca6') },
+        { name: 'Подарунковий бокс', desc: 'Тістечка та печиво в елегантній упаковці', photo: UNSPLASH('1759975142115-23f8862b6748') },
+      ]},
+    ];
+
+    /* Начинки: цвета градиента имитируют слои среза */
+    const FILLINGS = [
+      { name: 'Ванільна з полуницею', text: 'Ніжний ванільний бісквіт, вершковий крем і полуничне конфі.', layers: ['#FFF4E0', '#F28B9B'] },
+      { name: 'Шоколадна з вишнею', text: 'Вологий шоколадний бісквіт, вишня та шоколадний ганаш.', layers: ['#5A3328', '#A3263F'] },
+      { name: 'Снікерс', text: 'Шоколадні коржі, солона карамель, арахіс і нуга.', layers: ['#7A4A2E', '#D9A15B'] },
+      { name: 'Червоний оксамит', text: 'Яскраві коржі з какао та легкий крем-чиз.', layers: ['#B32B3A', '#FBF1E8'] },
+      { name: 'Медовик', text: 'Тонкі медові коржі та ніжний сметанний крем — як у бабусі.', layers: ['#C98A3E', '#F6E2BE'] },
+      { name: 'Фісташка-малина', text: 'Фісташковий бісквіт, малинове конфі та білий шоколад.', layers: ['#A9BE7B', '#D4475E'] },
+    ];
+
+    /* =========================================================
+       ХЕЛПЕРЫ
+       ========================================================= */
+    const $ = (sel) => document.querySelector(sel);
+
+    /* =========================================================
+       ШАПКА: тень при прокрутке
+       ========================================================= */
+    const topbar = $('#topbar');
+    const onScroll = () => topbar.classList.toggle('is-scrolled', window.scrollY > 8);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+
+    /* =========================================================
+       КАТАЛОГ: табы и фильтрация карточек
+       ========================================================= */
+    const tabsEl = $('#tabs');
+    const cardsEl = $('#cards');
+
+    // Создаём кнопки-табы
+    CATEGORIES.forEach((cat, i) => {
+      const tab = document.createElement('button');
+      tab.type = 'button';
+      tab.className = 'tab';
+      tab.id = `tab-${cat.id}`;
+      tab.setAttribute('role', 'tab');
+      tab.setAttribute('aria-controls', 'cards');
+      tab.dataset.category = cat.id;
+      tab.textContent = cat.name;
+      tabsEl.appendChild(tab);
+    });
+
+    // Отрисовка карточек выбранной категории
+    function renderCards(catId) {
+      const cat = CATEGORIES.find((c) => c.id === catId);
+      cardsEl.setAttribute('aria-labelledby', `tab-${cat.id}`);
+      cardsEl.innerHTML = cat.items.map((item, i) => `
+        <article class="card" style="animation-delay:${i * 60}ms">
+          <img class="card__photo" src="${item.photo || PLACEHOLDER(item.name, cat.bg, cat.fg)}"
+               ${item.pos ? `style="object-position:${item.pos}"` : ''}
+               width="600" height="480" loading="lazy" alt="Торт «${item.name}»">
+          <div class="card__body">
+            <h3 class="card__title">${item.name}</h3>
+            <p class="card__desc">${item.desc}</p>
+            <div class="card__footer">
+              <button type="button" class="btn btn--primary btn--sm" data-want="${item.name}">Хочу такий</button>
+            </div>
+          </div>
+        </article>`).join('');
+    }
+
+    // Переключение таба
+    function selectTab(catId, { focus = false } = {}) {
+      tabsEl.querySelectorAll('.tab').forEach((tab) => {
+        const active = tab.dataset.category === catId;
+        tab.setAttribute('aria-selected', active);
+        tab.tabIndex = active ? 0 : -1;
+        if (active) {
+          if (focus) tab.focus();
+          tab.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' });
+        }
+      });
+      renderCards(catId);
+    }
+
+    tabsEl.addEventListener('click', (e) => {
+      const tab = e.target.closest('.tab');
+      if (tab) selectTab(tab.dataset.category);
+    });
+
+    // Клавиатура: стрелки влево/вправо переключают табы
+    tabsEl.addEventListener('keydown', (e) => {
+      if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(e.key)) return;
+      e.preventDefault();
+      const ids = CATEGORIES.map((c) => c.id);
+      const current = ids.indexOf(document.activeElement.dataset.category);
+      let next = current;
+      if (e.key === 'ArrowRight') next = (current + 1) % ids.length;
+      if (e.key === 'ArrowLeft') next = (current - 1 + ids.length) % ids.length;
+      if (e.key === 'Home') next = 0;
+      if (e.key === 'End') next = ids.length - 1;
+      selectTab(ids[next], { focus: true });
+    });
+
+    selectTab(CATEGORIES[0].id);
+
+    /* =========================================================
+       НАЧИНКИ
+       ========================================================= */
+    $('#fillings-list').innerHTML = FILLINGS.map((f) => `
+      <article class="filling">
+        <span class="filling__swatch" aria-hidden="true"
+              style="background: repeating-linear-gradient(180deg, ${f.layers[0]} 0 10px, ${f.layers[1]} 10px 16px)"></span>
+        <div>
+          <h3 class="filling__title">${f.name}</h3>
+          <p class="filling__text">${f.text}</p>
+        </div>
+      </article>`).join('');
+
+    /* =========================================================
+       ФОРМА: заполнение списков
+       ========================================================= */
+    const form = $('#order-form');
+    const cakeSelect = $('#f-cake');
+    const fillingSelect = $('#f-filling');
+
+    // Торты группируем по категориям через <optgroup>
+    CATEGORIES.forEach((cat) => {
+      const group = document.createElement('optgroup');
+      group.label = cat.name;
+      cat.items.forEach((item) => group.appendChild(new Option(item.name, item.name)));
+      cakeSelect.appendChild(group);
+    });
+    FILLINGS.forEach((f) => fillingSelect.appendChild(new Option(f.name, f.name)));
+
+    // Дата: нельзя выбрать прошедший день
+    const todayISO = (() => {
+      const d = new Date();
+      d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+      return d.toISOString().slice(0, 10);
+    })();
+    $('#f-date').min = todayISO;
+
+    /* =========================================================
+       «ХОЧУ ТАКИЙ»: подставляем торт в форму и скроллим к ней
+       ========================================================= */
+    cardsEl.addEventListener('click', (e) => {
+      const btn = e.target.closest('[data-want]');
+      if (!btn) return;
+      showForm();
+      cakeSelect.value = btn.dataset.want;
+      $('#order').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      // Короткая подсветка поля, чтобы было видно, что торт подставился
+      cakeSelect.classList.remove('is-highlighted');
+      void cakeSelect.offsetWidth;   // перезапуск анимации
+      cakeSelect.classList.add('is-highlighted');
+    });
+
+    /* =========================================================
+       ЗАГРУЗКА ФОТО: превью и имя файла
+       ========================================================= */
+    const photoInput = $('#f-photo');
+    const uploadIcon = $('#upload-icon');
+    const uploadText = $('#upload-text');
+    const UPLOAD_ICON_DEFAULT = uploadIcon.innerHTML;
+    const UPLOAD_TEXT_DEFAULT = uploadText.innerHTML;
+
+    photoInput.addEventListener('change', () => {
+      const file = photoInput.files[0];
+      if (!file) return resetUpload();
+      const url = URL.createObjectURL(file);
+      uploadIcon.innerHTML = `<img src="${url}" alt="">`;
+      uploadText.innerHTML = `<b>Фото додано</b><span></span>`;
+      uploadText.querySelector('span').textContent = file.name;   // textContent — безопасно для любых имён файлов
+    });
+
+    function resetUpload() {
+      uploadIcon.innerHTML = UPLOAD_ICON_DEFAULT;
+      uploadText.innerHTML = UPLOAD_TEXT_DEFAULT;
+    }
+
+    /* =========================================================
+       ВАЛИДАЦИЯ И «ОТПРАВКА» (без реального запроса)
+       ========================================================= */
+    const validators = {
+      name: (v) => v.trim().length >= 2,
+      phone: (v) => v.replace(/\D/g, '').length >= 10,
+      date: (v) => v !== '' && v >= todayISO,
+      weight: (v) => v === '' || (Number(v) >= 0.5 && Number(v) <= 20),
+    };
+
+    function validateField(input) {
+      const check = validators[input.name];
+      if (!check) return true;
+      const ok = check(input.value);
+      input.closest('.field').classList.toggle('has-error', !ok);
+      input.setAttribute('aria-invalid', !ok);
+      return ok;
+    }
+
+    // Ошибку убираем сразу, как только пользователь её исправил
+    form.addEventListener('input', (e) => {
+      if (e.target.closest('.field.has-error')) validateField(e.target);
+    });
+    form.addEventListener('focusout', (e) => {
+      if (e.target.value) validateField(e.target);
+    });
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const inputs = Object.keys(validators).map((name) => form.elements[name]);
+      const invalid = inputs.filter((input) => !validateField(input));
+      if (invalid.length) {
+        invalid[0].focus();
+        return;
+      }
+      // Реальной отправки нет: здесь можно подключить email-сервис или Google-таблицу
+      form.hidden = true;
+      $('#success').classList.add('is-visible');
+      $('#success').focus({ preventScroll: true });
+      $('#order').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+
+    // «Нова заявка» — сбрасываем форму
+    function showForm() {
+      if (!form.hidden) return;
+      form.reset();
+      resetUpload();
+      form.querySelectorAll('.has-error').forEach((f) => f.classList.remove('has-error'));
+      form.hidden = false;
+      $('#success').classList.remove('is-visible');
+    }
+    $('#new-order').addEventListener('click', () => {
+      showForm();
+      $('#f-name').focus();
+    });
+
+    /* =========================================================
+       ФУТЕР
+       ========================================================= */
+    $('#year').textContent = new Date().getFullYear();
+
+    // Демо: ссылки на соцсети пока никуда не ведут
+    document.querySelectorAll('[data-demo-link]').forEach((a) => a.addEventListener('click', (e) => e.preventDefault()));
+  </script>
+</body>
+</html>
